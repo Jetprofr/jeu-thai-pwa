@@ -1,7 +1,7 @@
 {
-  "name": "Jeu Nombres Tha\u00ef",
-  "short_name": "Nombres Tha\u00ef",
-  "start_url": "jeu_nombres_thai_pwa.html",
+  "name": "Jeu Nombres Thaï",
+  "short_name": "NombresThaï",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#4caf50",

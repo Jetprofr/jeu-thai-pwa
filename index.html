@@ -176,7 +176,6 @@
       const shuffled = Array.from(choices).sort(() => Math.random() - 0.5);
       const audio = document.getElementById('audio');
       audio.src = currentAnswer + ".mp3";
-      audio.play();
       const choicesDiv = document.getElementById('choices');
       choicesDiv.innerHTML = "";
       shuffled.forEach(choice => {
