@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Jeu Nombres Thaï - iPad</title>
   <link rel="manifest" href="manifest.json" />
   <script>
@@ -12,75 +12,103 @@
   </script>
   <style>
     :root {
-      --fs-base: 4vw;
-      --fs-large: 5vw;
-      --fs-button: 4.5vw;
+      --fs-base: clamp(16px, 4vw, 28px);
+      --fs-large: clamp(18px, 5vw, 36px);
+      --fs-button: clamp(16px, 4.5vw, 30px);
     }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
+      margin: 0;
       font-family: sans-serif;
       text-align: center;
-      padding: 4vw;
+      padding: 1em;
       font-size: var(--fs-base);
-      box-sizing: border-box;
-      max-width: 100vw;
-      overflow-x: hidden;
+      background-color: #fff;
+      color: #000;
     }
+
+    #container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
     h1 {
       font-size: var(--fs-large);
     }
+
     button {
-      margin: 1vw;
-      padding: 2vw 4vw;
+      margin: 0.5em;
+      padding: 0.8em 1.2em;
       font-size: var(--fs-button);
+      max-width: 90%;
+      word-wrap: break-word;
     }
+
     .choices {
-      margin-top: 4vw;
+      margin-top: 1em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5em;
     }
+
     .feedback {
-      margin-top: 2vw;
+      margin-top: 1em;
       font-weight: bold;
       font-size: var(--fs-large);
     }
+
     .bar-container {
-      width: 90%;
+      width: 100%;
       background: #eee;
       border-radius: 10px;
-      margin: 4vw auto;
+      margin: 1em auto;
+      height: 1em;
+      overflow: hidden;
     }
+
     .bar-fill {
-      height: 3vw;
+      height: 100%;
       background: #4caf50;
       width: 0%;
-      border-radius: 10px;
+      transition: width 0.3s ease-in-out;
     }
+
     #welcome {
       display: block;
     }
+
     #game {
       display: none;
     }
   </style>
 </head>
 <body>
-  <div id="welcome">
-    <h1>Bienvenue sur l’application 🇹🇭</h1>
-    <p>Apprenez les nombres en thaï tout en vous amusant 🎉</p>
-    <button onclick="startGame()">Commencer</button>
-  </div>
-
-  <div id="game">
-    <h1>Jeu des nombres en thaï</h1>
-    <p>Écoutez et choisissez la bonne réponse :</p>
-    <p id="niveau">Niveau : 0 à 3</p>
-    <div class="bar-container">
-      <div id="bar" class="bar-fill"></div>
+  <div id="container">
+    <div id="welcome">
+      <h1>Bienvenue sur l’application 🇹🇭</h1>
+      <p>Apprenez les nombres en thaï tout en vous amusant 🎉</p>
+      <button onclick="startGame()">Commencer</button>
     </div>
-    <p>Séries réussies sans erreur : <span id="success-streak">0</span> / 3</p>
-    <p>Essais dans cette série : <span id="attempt-count">0</span></p>
-    <audio id="audio"></audio>
-    <button onclick="playAudio()">🔊 Rejouer</button>
-    <div class="choices" id="choices"></div>
-    <div class="feedback" id="feedback"></div>
+
+    <div id="game">
+      <h1>Jeu des nombres en thaï</h1>
+      <p>Écoutez et choisissez la bonne réponse :</p>
+      <p id="niveau">Niveau : 0 à 3</p>
+      <div class="bar-container">
+        <div id="bar" class="bar-fill"></div>
+      </div>
+      <p>Séries réussies sans erreur : <span id="success-streak">0</span> / 3</p>
+      <p>Essais dans cette série : <span id="attempt-count">0</span></p>
+      <audio id="audio"></audio>
+      <button onclick="playAudio()">🔊 Rejouer</button>
+      <div class="choices" id="choices"></div>
+      <div class="feedback" id="feedback"></div>
+    </div>
   </div>
 
   <script>
