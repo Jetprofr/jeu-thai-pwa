@@ -1,203 +1,99 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jeu Nombres Thaï - iPad</title>
+  <title>Jeu Nombres Thaï</title>
   <link rel="manifest" href="manifest.json" />
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js');
     }
   </script>
-  <style>
-    :root {
-      --fs-base: clamp(16px, 4vw, 28px);
-      --fs-large: clamp(18px, 5vw, 36px);
-      --fs-button: clamp(16px, 4.5vw, 30px);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: sans-serif;
-      text-align: center;
-      padding: 1em;
-      font-size: var(--fs-base);
-      background-color: #fff;
-      color: #000;
-    }
-
-    #container {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      font-size: var(--fs-large);
-    }
-
-    button {
-      margin: 0.5em;
-      padding: 0.8em 1.2em;
-      font-size: var(--fs-button);
-      max-width: 90%;
-      word-wrap: break-word;
-    }
-
-    .choices {
-      margin-top: 1em;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5em;
-    }
-
-    .feedback {
-      margin-top: 1em;
-      font-weight: bold;
-      font-size: var(--fs-large);
-    }
-
-    .bar-container {
-      width: 100%;
-      background: #eee;
-      border-radius: 10px;
-      margin: 1em auto;
-      height: 1em;
-      overflow: hidden;
-    }
-
-    .bar-fill {
-      height: 100%;
-      background: #4caf50;
-      width: 0%;
-      transition: width 0.3s ease-in-out;
-    }
-
-    #welcome {
-      display: block;
-    }
-
-    #game {
-      display: none;
-    }
-  </style>
 </head>
 <body>
-  <div id="container">
-    <div id="welcome">
-      <h1>Bienvenue sur l’application 🇹🇭</h1>
-      <p>Apprenez les nombres en thaï tout en vous amusant 🎉</p>
-      <button onclick="startGame()">Commencer</button>
-    </div>
+  <h1>Bienvenue sur l’application 🇹🇭</h1>
+  <button onclick="startGame()">Commencer</button>
 
-    <div id="game">
-      <h1>Jeu des nombres en thaï</h1>
-      <p>Écoutez et choisissez la bonne réponse :</p>
-      <p id="niveau">Niveau : 0 à 3</p>
-      <div class="bar-container">
-        <div id="bar" class="bar-fill"></div>
-      </div>
-      <p>Séries réussies sans erreur : <span id="success-streak">0</span> / 3</p>
-      <p>Essais dans cette série : <span id="attempt-count">0</span></p>
-      <audio id="audio"></audio>
-      <button onclick="playAudio()">🔊 Rejouer</button>
-      <div class="choices" id="choices"></div>
-      <div class="feedback" id="feedback"></div>
-    </div>
+  <div id="game" style="display:none;">
+    <p id="niveau"></p>
+    <audio id="audio"></audio>
+    <button onclick="playAudio()">🔊 Rejouer</button>
+    <div id="choices"></div>
+    <div id="feedback"></div>
   </div>
 
   <script>
-    const thaiMap = {
-      0: "ศูนย์", 1: "หนึ่ง", 2: "สอง", 3: "สาม", 4: "สี่", 5: "ห้า", 6: "หก", 7: "เจ็ด", 8: "แปด", 9: "เก้า",
-      10: "สิบ", 11: "สิบเอ็ด", 12: "สิบสอง", 13: "สิบสาม", 14: "สิบสี่", 15: "สิบห้า", 16: "สิบหก",
-      17: "สิบเจ็ด", 18: "สิบแปด", 19: "สิบเก้า", 20: "ยี่สิบ", 21: "ยี่สิบเอ็ด", 22: "ยี่สิบสอง",
-      23: "ยี่สิบสาม", 24: "ยี่สิบสี่", 25: "ยี่สิบห้า", 26: "ยี่สิบหก", 27: "ยี่สิบเจ็ด", 28: "ยี่สิบแปด",
-      29: "ยี่สิบเก้า", 30: "สามสิบ", 31: "สามสิบเอ็ด", 32: "สามสิบสอง", 33: "สามสิบสาม", 34: "สามสิบสี่",
-      35: "สามสิบห้า", 36: "สามสิบหก", 40: "สี่สิบ", 50: "ห้าสิบ", 60: "หกสิบ", 70: "เจ็ดสิบ",
-      80: "แปดสิบ", 100: "หนึ่งร้อย", 105: "หนึ่งร้อยห้า", 200: "สองร้อย", 300: "สามร้อย",
-      400: "สี่ร้อย", 1000: "หนึ่งพัน", 1500: "พันห้า", 2000: "สองพัน", 10000: "หนึ่งหมื่น"
-    };
-    const availableNumbers = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,
-      25,26,27,28,29,30,31,32,33,34,35,36,40,50,60,70,80,100,105,200,300,400,1000,1500,2000,10000];
-
+    const thaiMap = {0:"ศูนย์",1:"หนึ่ง",2:"สอง",3:"สาม",4:"สี่",5:"ห้า",6:"หก",7:"เจ็ด",8:"แปด",9:"เก้า",10:"สิบ",20:"ยี่สิบ",30:"สามสิบ",40:"สี่สิบ",50:"ห้าสิบ",60:"หกสิบ",70:"เจ็ดสิบ",80:"แปดสิบ",100:"หนึ่งร้อย",105:"หนึ่งร้อยห้า",200:"สองร้อย",300:"สามร้อย",400:"สี่ร้อย",1000:"หนึ่งพัน",1500:"พันห้า",2000:"สองพัน",10000:"หนึ่งหมื่น"};
+    const available = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,40,50,60,70,80,100,105,200,300,400,1000,1500,2000,10000];
     let currentAnswer = null;
     let currentMaxIndex = 3;
-    let currentRange = availableNumbers.slice(0, currentMaxIndex + 1);
+    let currentRange = available.slice(0, currentMaxIndex + 1);
     let answered = new Set();
     let successStreak = 0;
     let attemptCount = 0;
 
     function startGame() {
-      document.getElementById('welcome').style.display = 'none';
+      document.querySelector('button').style.display = 'none';
       document.getElementById('game').style.display = 'block';
       nextQuestion();
     }
 
-    function updateUI() {
-      document.getElementById("niveau").innerText = "Niveau : 0 à " + availableNumbers[currentMaxIndex];
-      document.getElementById("success-streak").innerText = successStreak;
-      document.getElementById("attempt-count").innerText = attemptCount;
-      const percent = Math.floor(((currentMaxIndex + 1) / availableNumbers.length) * 100);
-      document.getElementById("bar").style.width = percent + "%";
-    }
-
     function playAudio() {
-      const audio = document.getElementById('audio');
+      const audio = document.getElementById("audio");
       audio.currentTime = 0;
       audio.play();
     }
 
+    function updateUI() {
+      document.getElementById("niveau").innerText = "Niveau : 0 à " + available[currentMaxIndex];
+    }
+
     function nextQuestion() {
-      document.getElementById('feedback').innerText = "";
       if (answered.size >= currentRange.length) {
         successStreak++;
         answered.clear();
         attemptCount = 0;
-        if (successStreak >= 3 && currentMaxIndex + 1 < availableNumbers.length) {
+        if (successStreak >= 3 && currentMaxIndex + 1 < available.length) {
           currentMaxIndex++;
-          currentRange = availableNumbers.slice(0, currentMaxIndex + 1);
+          currentRange = available.slice(0, currentMaxIndex + 1);
           successStreak = 0;
         }
       }
       updateUI();
-      const randIndex = Math.floor(Math.random() * currentRange.length);
-      currentAnswer = currentRange[randIndex];
-      const choices = new Set();
-      choices.add(currentAnswer);
-      while (choices.size < 3) {
+      const rand = Math.floor(Math.random() * currentRange.length);
+      currentAnswer = currentRange[rand];
+      const audio = document.getElementById("audio");
+      audio.src = "audio/" + currentAnswer + ".mp3";
+      audio.play();
+      const options = new Set([currentAnswer]);
+      while (options.size < 3) {
         const r = currentRange[Math.floor(Math.random() * currentRange.length)];
-        choices.add(r);
+        options.add(r);
       }
-      const shuffled = Array.from(choices).sort(() => Math.random() - 0.5);
-      const audio = document.getElementById('audio');
-      audio.src = currentAnswer + ".mp3";
-      const choicesDiv = document.getElementById('choices');
-      choicesDiv.innerHTML = "";
-      shuffled.forEach(choice => {
-        const btn = document.createElement('button');
-        btn.innerText = choice + " = " + thaiMap[choice];
-        btn.onclick = () => checkAnswer(choice);
-        choicesDiv.appendChild(btn);
+      const choices = Array.from(options).sort(() => Math.random() - 0.5);
+      const choiceDiv = document.getElementById("choices");
+      choiceDiv.innerHTML = "";
+      choices.forEach(n => {
+        const btn = document.createElement("button");
+        btn.textContent = `${n} = ${thaiMap[n] || ''}`;
+        btn.onclick = () => checkAnswer(n);
+        choiceDiv.appendChild(btn);
       });
     }
 
     function checkAnswer(choice) {
-      const feedback = document.getElementById('feedback');
+      const feedback = document.getElementById("feedback");
       attemptCount++;
       if (choice === currentAnswer) {
-        feedback.innerText = "✅ Bonne réponse !";
+        feedback.textContent = "✅ Bonne réponse !";
         answered.add(choice);
         setTimeout(nextQuestion, 800);
       } else {
-        feedback.innerText = "❌ Mauvaise réponse. Écoutez à nouveau.";
+        feedback.textContent = "❌ Mauvaise réponse.";
         successStreak = 0;
         playAudio();
-        updateUI();
       }
     }
   </script>
