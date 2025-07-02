@@ -1,15 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.5">
   <title>Jeu ultra lisible - Nombres en thaï</title>
-  <link rel="manifest" href="manifest.json">
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js');
-    }
-  </script>
   <style>
     body { font-family: sans-serif; text-align: center; padding: 40px; font-size: 40px; }
     button { margin: 10px; padding: 30px 50px; font-size: 40px; }
@@ -22,10 +17,18 @@
       height: 30px; background: #4caf50; width: 0%; border-radius: 10px;
     }
   </style>
+  <link rel="manifest" href="manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+  </script>
+  
 </head>
 <body>
   <h1>Jeu progressif des nombres en thaï</h1>
   <p>Écoutez le son et choisissez la bonne réponse :</p>
+
   <div id="game">
     <p id="niveau">Niveau : 0 à 3</p>
     <div class="bar-container">
@@ -38,6 +41,7 @@
     <div class="choices" id="choices"></div>
     <div class="feedback" id="feedback"></div>
   </div>
+
   <script>
     const thaiMap = {
       0: "ศูนย์", 1: "หนึ่ง", 2: "สอง", 3: "สาม", 4: "สี่", 5: "ห้า", 6: "หก", 7: "เจ็ด", 8: "แปด", 9: "เก้า",
@@ -75,29 +79,37 @@
 
     function nextQuestion() {
       document.getElementById('feedback').innerText = "";
+
       if (answered.size >= currentRange.length) {
         successStreak++;
         answered.clear();
         attemptCount = 0;
+
         if (successStreak >= 3 && currentMaxIndex + 1 < availableNumbers.length) {
           currentMaxIndex++;
           currentRange = availableNumbers.slice(0, currentMaxIndex + 1);
           successStreak = 0;
         }
       }
+
       updateUI();
+
       const randIndex = Math.floor(Math.random() * currentRange.length);
       currentAnswer = currentRange[randIndex];
+
       const choices = new Set();
       choices.add(currentAnswer);
       while (choices.size < 3) {
         const r = currentRange[Math.floor(Math.random() * currentRange.length)];
         choices.add(r);
       }
+
       const shuffled = Array.from(choices).sort(() => Math.random() - 0.5);
+
       const audio = document.getElementById('audio');
       audio.src = currentAnswer + ".mp3";
       audio.play();
+
       const choicesDiv = document.getElementById('choices');
       choicesDiv.innerHTML = "";
       shuffled.forEach(choice => {
