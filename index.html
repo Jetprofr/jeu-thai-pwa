@@ -1,35 +1,76 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.5">
-  <title>Jeu ultra lisible - Nombres en thaï</title>
-  <style>
-    body { font-family: sans-serif; text-align: center; padding: 40px; font-size: 40px; }
-    button { margin: 10px; padding: 30px 50px; font-size: 40px; }
-    .choices { margin-top: 40px; }
-    .feedback { margin-top: 20px; font-weight: bold; font-size: 42px; }
-    .bar-container {
-      width: 90%; background: #eee; border-radius: 10px; margin: 20px auto;
-    }
-    .bar-fill {
-      height: 30px; background: #4caf50; width: 0%; border-radius: 10px;
-    }
-  </style>
-  <link rel="manifest" href="manifest.json">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Jeu Nombres Thaï - iPad</title>
+  <link rel="manifest" href="manifest.json" />
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js');
     }
   </script>
-  
+  <style>
+    :root {
+      --fs-base: 4vw;
+      --fs-large: 5vw;
+      --fs-button: 4.5vw;
+    }
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 4vw;
+      font-size: var(--fs-base);
+      box-sizing: border-box;
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+    h1 {
+      font-size: var(--fs-large);
+    }
+    button {
+      margin: 1vw;
+      padding: 2vw 4vw;
+      font-size: var(--fs-button);
+    }
+    .choices {
+      margin-top: 4vw;
+    }
+    .feedback {
+      margin-top: 2vw;
+      font-weight: bold;
+      font-size: var(--fs-large);
+    }
+    .bar-container {
+      width: 90%;
+      background: #eee;
+      border-radius: 10px;
+      margin: 4vw auto;
+    }
+    .bar-fill {
+      height: 3vw;
+      background: #4caf50;
+      width: 0%;
+      border-radius: 10px;
+    }
+    #welcome {
+      display: block;
+    }
+    #game {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-  <h1>Jeu progressif des nombres en thaï</h1>
-  <p>Écoutez le son et choisissez la bonne réponse :</p>
+  <div id="welcome">
+    <h1>Bienvenue sur l’application 🇹🇭</h1>
+    <p>Apprenez les nombres en thaï tout en vous amusant 🎉</p>
+    <button onclick="startGame()">Commencer</button>
+  </div>
 
   <div id="game">
+    <h1>Jeu des nombres en thaï</h1>
+    <p>Écoutez et choisissez la bonne réponse :</p>
     <p id="niveau">Niveau : 0 à 3</p>
     <div class="bar-container">
       <div id="bar" class="bar-fill"></div>
@@ -63,6 +104,12 @@
     let successStreak = 0;
     let attemptCount = 0;
 
+    function startGame() {
+      document.getElementById('welcome').style.display = 'none';
+      document.getElementById('game').style.display = 'block';
+      nextQuestion();
+    }
+
     function updateUI() {
       document.getElementById("niveau").innerText = "Niveau : 0 à " + availableNumbers[currentMaxIndex];
       document.getElementById("success-streak").innerText = successStreak;
@@ -79,37 +126,29 @@
 
     function nextQuestion() {
       document.getElementById('feedback').innerText = "";
-
       if (answered.size >= currentRange.length) {
         successStreak++;
         answered.clear();
         attemptCount = 0;
-
         if (successStreak >= 3 && currentMaxIndex + 1 < availableNumbers.length) {
           currentMaxIndex++;
           currentRange = availableNumbers.slice(0, currentMaxIndex + 1);
           successStreak = 0;
         }
       }
-
       updateUI();
-
       const randIndex = Math.floor(Math.random() * currentRange.length);
       currentAnswer = currentRange[randIndex];
-
       const choices = new Set();
       choices.add(currentAnswer);
       while (choices.size < 3) {
         const r = currentRange[Math.floor(Math.random() * currentRange.length)];
         choices.add(r);
       }
-
       const shuffled = Array.from(choices).sort(() => Math.random() - 0.5);
-
       const audio = document.getElementById('audio');
       audio.src = currentAnswer + ".mp3";
       audio.play();
-
       const choicesDiv = document.getElementById('choices');
       choicesDiv.innerHTML = "";
       shuffled.forEach(choice => {
@@ -134,8 +173,6 @@
         updateUI();
       }
     }
-
-    nextQuestion();
   </script>
 </body>
 </html>
